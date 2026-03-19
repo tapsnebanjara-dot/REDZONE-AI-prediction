@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>REDZONE AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #f5f5f5;
+    }
+
+    /* Splash Screen */
+    #splash {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: black;
+      color: #00ffcc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 28px;
+      font-weight: bold;
+      text-align: center;
+      z-index: 9999;
+      animation: glow 1.5s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #00ffcc; }
+      to { text-shadow: 0 0 25px #00ffcc; }
+    }
+
+    /* Hacker Lightning Text */
+    .hacker-text {
+      font-size: 22px;
+      color: #00ffcc;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+
+      text-shadow:
+        0 0 5px #00ffcc,
+        0 0 10px #00ffcc,
+        0 0 20px #00ffcc,
+        0 0 40px #00ffcc;
+
+      animation: flicker 1.5s infinite alternate,
+                 lightning 3s infinite;
+    }
+
+    @keyframes flicker {
+      0% { opacity: 1; }
+      50% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes lightning {
+      0%, 90%, 100% {
+        text-shadow:
+          0 0 5px #00ffcc,
+          0 0 10px #00ffcc,
+          0 0 20px #00ffcc;
+      }
+
+      92% {
+        text-shadow:
+          0 0 25px #fff,
+          0 0 50px #00ffff;
+      }
+
+      96% {
+        text-shadow:
+          0 0 40px #fff,
+          0 0 80px #00ffff;
+      }
+    }
+
+    /* Screens */
+    #lock, #uidScreen, #connecting {
+      display: none;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: black;
+      color: white;
+      text-align: center;
+      padding-top: 40%;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: none;
+      margin-top: 10px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 10px;
+      background: green;
+      color: white;
+    }
+
+    /* Connecting */
+    .typing {
+      font-size: 18px;
+      color: #00ffcc;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0.3; }
+    }
+
+    /* Main App */
+    #main { display: none; }
+
+    .header {
+      background: #1e7f43;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .container { padding: 10px; }
+
+    /* Profile Card */
+    .profile-card {
+      display: flex;
+      align-items: center;
+      background: linear-gradient(90deg, #1f8f4e, #2db36c);
+      padding: 12px;
+      border-radius: 12px;
+      color: white;
+      margin-bottom: 15px;
+    }
+
+    .avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-right: 12px;
+      border: 2px solid white;
+    }
+
+    .vip {
+      background: rgba(255,255,255,0.2);
+      padding: 2px 6px;
+      margin-left: 6px;
+      border-radius: 5px;
+      font-size: 12px;
+    }
+
+    .uid-box {
+      background: rgba(255,255,255,0.2);
+      padding: 2px 6px;
+      border-radius: 5px;
+      margin-left: 5px;
+    }
+
+    /* Prediction */
+    .prediction-box {
+      background: black;
+      color: cyan;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 22px;
+    }
+
+    table {
+      width: 100%;
+      background: white;
+      margin-top: 15px;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #1e7f43;
+      color: white;
+      padding: 10px;
+    }
+
+    td {
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .green { color: green; font-weight: bold; }
+    .red { color: red; font-weight: bold; }
+
+    .dot {
+      height: 10px;
+      width: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot.green { background: green; }
+    .dot.red { background: red; }
+
+  </style>
+</head>
+
+<body>
+
+<!-- Splash -->
+<div id="splash">
+  REDZONE<br>REDZONE AI PREDICTION
+</div>
+
+<!-- Passkey -->
+<div id="lock">
+  <h2 class="hacker-text">🔐 Enter Pass Key Provided by REDZONE</h2>
+  <input type="password" id="pass" placeholder="Enter key"><br>
+  <button class="btn" onclick="checkPass()">Unlock</button>
+  <p id="error" style="color:red;"></p>
+</div>
+
+<!-- UID -->
+<div id="uidScreen">
+  <h2 class="hacker-text">🎮 Enter Your Game UID</h2>
+  <input type="text" id="uid" placeholder="Enter UID"><br>
+  <button class="btn" onclick="connect()">Submit</button>
+</div>
+
+<!-- Connecting -->
+<div id="connecting">
+  <h2 class="typing">ESTBLASHING THE SERVER AND CONNECTING TO REDZONE AI...</h2>
+</div>
+
+<!-- Main -->
+<div id="main">
+  <div class="header">REDZONE AI Prediction</div>
+
+  <div class="container">
+
+    <!-- Profile -->
+    <div class="profile-card">
+      <img src="https://i.pravatar.cc/100" class="avatar">
+      <div>
+        <b>YOUR BG678 SERVER IS CONNECTED TO REDZONE</b> <span class="vip">VIP1</span><br>
+        UID: <span id="showUID">0000</span>
+      </div>
+    </div>
+
+    <div class="prediction-box" id="prediction">
+      Click New Prediction
+    </div>
+
+    <button class="btn" onclick="generatePrediction()">New Prediction</button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Number</th>
+          <th>Result</th>
+          <th>Color</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+
+  </div>
+</div>
+
+<script>
+
+// Splash
+setTimeout(() => {
+  splash.style.display = "none";
+  lock.style.display = "block";
+}, 2500);
+
+// Passkey
+function checkPass() {
+  if(pass.value === "REDZONE2020") {
+    lock.style.display = "none";
+    uidScreen.style.display = "block";
+  } else {
+    error.innerText = "Wrong Key!";
+  }
+}
+
+// Connect
+function connect() {
+  let uid = document.getElementById("uid").value;
+
+  if(uid === "" || !/^[0-9]+$/.test(uid)) {
+    alert("Enter valid UID");
+    return;
+  }
+
+  uidScreen.style.display = "none";
+  connecting.style.display = "block";
+
+  setTimeout(() => {
+    connecting.style.display = "none";
+    main.style.display = "block";
+    document.getElementById("showUID").innerText = uid;
+  }, 3000);
+}
+
+// Prediction
+let history = [];
+
+function generatePrediction() {
+  let num = Math.floor(Math.random() * 10);
+  let type = num >= 5 ? "Big" : "Small";
+
+  let prediction = Math.random() > 0.5 ? "Big" : "Small";
+  let confidence = Math.floor(Math.random()*15)+85;
+
+  prediction.innerText = `Prediction: ${prediction} (${confidence}%)`;
+
+  let color = num % 2 === 0 ? "red" : "green";
+
+  tableBody.innerHTML = `
+    <tr>
+      <td class="${color}">${num}</td>
+      <td>${type}</td>
+      <td><span class="dot ${color}"></span></td>
+    </tr>
+  ` + tableBody.innerHTML;
+}
+
+</script>
+
+</body>
+</html>
